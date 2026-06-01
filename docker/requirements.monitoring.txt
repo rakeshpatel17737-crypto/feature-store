@@ -1,0 +1,11 @@
+streamlit==1.36.0
+plotly==5.22.0
+pandas==2.2.2
+redis==5.0.7
+sqlalchemy==2.0.31
+psycopg2-binary==2.9.9
+requests==2.32.3
+pydantic==2.7.4
+pydantic-settings==2.3.4
+python-dotenv==1.0.1
+structlog==24.2.0

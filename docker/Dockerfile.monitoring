@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/requirements.monitoring.txt .
+RUN pip install --no-cache-dir -r requirements.monitoring.txt
+
+COPY monitoring/ ./monitoring/
+
+CMD ["streamlit", "run", "monitoring/app.py", \
+     "--server.port=8501", \
+     "--server.address=0.0.0.0", \
+     "--server.headless=true", \
+     "--browser.gatherUsageStats=false"]

@@ -1,0 +1,7 @@
+apache-airflow==2.9.2
+apache-airflow-providers-redis
+psycopg2-binary==2.9.9
+requests==2.32.3
+redis==5.0.7
+scipy==1.13.0
+numpy==1.26.4

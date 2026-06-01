@@ -1,0 +1,32 @@
+FROM bitnami/spark:3.5.1
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl wget python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download Delta Lake and Kafka JARs to avoid slow spark.jars.packages resolution
+ENV SPARK_JARS_DIR=/opt/bitnami/spark/jars
+ENV SCALA_VERSION=2.12
+ENV SPARK_VERSION=3.5.1
+ENV DELTA_VERSION=3.1.0
+
+RUN wget -q -P ${SPARK_JARS_DIR} \
+    "https://repo1.maven.org/maven2/io/delta/delta-spark_${SCALA_VERSION}/${DELTA_VERSION}/delta-spark_${SCALA_VERSION}-${DELTA_VERSION}.jar" \
+    "https://repo1.maven.org/maven2/io/delta/delta-storage/${DELTA_VERSION}/delta-storage-${DELTA_VERSION}.jar" \
+    "https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_${SCALA_VERSION}/${SPARK_VERSION}/spark-sql-kafka-0-10_${SCALA_VERSION}-${SPARK_VERSION}.jar" \
+    "https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.0/kafka-clients-3.4.0.jar" \
+    "https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_${SCALA_VERSION}/${SPARK_VERSION}/spark-token-provider-kafka-0-10_${SCALA_VERSION}-${SPARK_VERSION}.jar" \
+    "https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar"
+
+COPY docker/requirements.streaming.txt /tmp/
+RUN pip3 install --no-cache-dir -r /tmp/requirements.streaming.txt
+
+COPY streaming/ /opt/streaming/
+COPY online_store/ /opt/online_store/
+COPY offline_store/ /opt/offline_store/
+
+ENV PYTHONPATH=/opt
+
+USER 1001
